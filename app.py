@@ -4,6 +4,12 @@ from generator import generate_prompt, load_error
 
 st.set_page_config(page_title="Prompt Generator", page_icon="🤖", layout="centered")
 
+# Initialisation de l'historique et de l'état de génération
+if 'history' not in st.session_state:
+    st.session_state.history = []
+if 'generating' not in st.session_state:
+    st.session_state.generating = False
+
 st.markdown("<h1 style='text-align: left;'>Prompt Generator for ChatGPT</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: left;'>Générez automatiquement des prompts efficaces, clairs et adaptés à vos besoins</p>", unsafe_allow_html=True)
 
@@ -41,7 +47,7 @@ PLACEHOLDER_EXAMPLES = [
     "Rédige une scène dramatique entre deux frères ennemis"
 ]
 
-random_placeholder = random.choice(PLACEHOLDER_EXAMPLES)
+generating = st.session_state.generating
 
 with st.sidebar:
     st.header("Paramètres du prompt")
@@ -51,18 +57,44 @@ with st.sidebar:
     st.caption(PROMPT_PATTERNS[pattern])
 
 st.markdown("### Quel est votre besoin ?")
-user_input = st.text_area("", placeholder=random_placeholder, height=150)
+if "random_placeholder" not in st.session_state:
+    st.session_state.random_placeholder = random.choice(PLACEHOLDER_EXAMPLES)
 
-if st.button("✨ Générer le prompt"):
+user_input = st.text_area("", placeholder=st.session_state.random_placeholder, height=150)
+
+
+if st.button("✨ Générer le prompt", disabled=generating):
     if load_error is not None:
         st.error(f"Le modèle n'a pas pu être chargé : {load_error}")
-    elif not user_input.strip():
+    elif not user_input or not user_input.strip():
         st.warning("Veuillez d'abord renseigner votre besoin.")
     else:
+        st.session_state.generating = True
         with st.spinner("Génération du prompt en cours..."):
             result = generate_prompt(category, style, pattern, user_input)
+        st.session_state.generating = False
+
         st.success("✅ Prompt généré avec succès !")
         st.markdown("### 📋 Résultat")
         st.code(result, language="markdown")
 
         st.download_button("📥 Télécharger le prompt", result, file_name="prompt.txt", mime="text/plain")
+
+        st.session_state.history.append({
+            "prompt": result,
+            "input": user_input,
+            "category": category,
+            "style": style,
+            "pattern": pattern,
+        })
+
+# Historique
+if st.session_state.history:
+    st.markdown("### 📚 Historique")
+    for i, item in enumerate(reversed(st.session_state.history[-5:]), 1):
+        with st.expander(f"🔹 Prompt #{len(st.session_state.history) - i + 1}"):
+            st.markdown(f"**Input utilisateur :** {item['input']}")
+            st.markdown(f"**Catégorie :** {item['category']}")
+            st.markdown(f"**Niveau de détail :** {item['style']}")
+            st.markdown(f"**Modèle :** {item['pattern']}")
+            st.code(item['prompt'], language="markdown")
