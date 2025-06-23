@@ -19,24 +19,32 @@ DETAIL_LEVELS = {
     "Très détaillé": "Le prompt doit inclure un rôle, un objectif, un contexte et des consignes structurées.",
 }
 
+PROMPT_PATTERNS = {
+    "Agis comme...": "Crée un prompt qui commence par 'Agis comme...' pour établir un rôle clair.",
+    "Étapes à suivre": "Formule un prompt qui demande une réponse étape par étape.",
+    "Objectif clair": "Structure un prompt autour d'un objectif explicite à atteindre.",
+    "Réponse avec contraintes": "Génère un prompt demandant une réponse avec des contraintes précises (longueur, ton, format).",
+    "Créatif / roleplay": "Formule un prompt immersif avec un ton ou une personnalité spécifique.",
+}
+
 with st.sidebar:
     st.header("Paramètres du prompt")
     category = st.selectbox("📌 Type de prompt", list(PROMPT_CATEGORIES.keys()))
     style = st.selectbox("🎛️ Niveau de détail", list(DETAIL_LEVELS.keys()))
+    pattern = st.selectbox("🧠 Modèle de génération", list(PROMPT_PATTERNS.keys()))
+    st.caption(PROMPT_PATTERNS[pattern])
 
 st.markdown("### Quel est votre besoin ?")
 user_input = st.text_area("", placeholder="Ex : Je veux ouvrir un foodtruck à Paris", height=150)
 
-generate = st.button("✨ Générer le prompt")
-
-if generate:
+if st.button("✨ Générer le prompt"):
     if load_error is not None:
         st.error(f"Le modèle n'a pas pu être chargé : {load_error}")
     elif not user_input.strip():
         st.warning("Veuillez d'abord renseigner votre besoin.")
     else:
         with st.spinner("Génération du prompt en cours..."):
-            result = generate_prompt(category, style, user_input)
+            result = generate_prompt(category, style, pattern, user_input)
         st.success("✅ Prompt généré avec succès !")
         st.markdown("### 📋 Résultat")
         st.code(result, language="markdown")

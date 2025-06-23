@@ -18,18 +18,50 @@ except Exception as e:
     _load_error = str(e)
     _logger.error("Client HuggingFace non initialisé : %s", e)
 
-TEMPLATE = (
-    "Tu es un générateur de prompts pour ChatGPT. "
-    "Ta tâche est de produire un prompt clair, structuré et directement utilisable dans ChatGPT, "
-    "en respectant les instructions suivantes :\n\n"
-    "- Tu dois répondre en français\n"
-    "- {category_instruction}\n"
-    "- {style_instruction}\n\n"
-    "Voici la demande de l'utilisateur : {user_input}\n\n"
-    "Formule uniquement le prompt final à copier-coller dans ChatGPT, sans explication autour :"
-)
+PROMPT_TEMPLATES = {
+    "Agis comme...": (
+        "Tu dois générer un prompt commençant par 'Agis comme...'.\n"
+        "Réponds en français.\n"
+        "{category_instruction}\n"
+        "{style_instruction}\n"
+        "Demande de l'utilisateur : {user_input}\n\n"
+        "Formule le prompt final à coller dans ChatGPT :"
+    ),
+    "Étapes à suivre": (
+        "Tu dois générer un prompt demandant une réponse étape par étape.\n"
+        "Réponds en français.\n"
+        "{category_instruction}\n"
+        "{style_instruction}\n"
+        "Demande de l'utilisateur : {user_input}\n\n"
+        "Écris le prompt final à coller dans ChatGPT :"
+    ),
+    "Objectif clair": (
+        "Tu dois générer un prompt centré sur un objectif explicite.\n"
+        "Réponds en français.\n"
+        "{category_instruction}\n"
+        "{style_instruction}\n"
+        "Objectif exprimé : {user_input}\n\n"
+        "Écris le prompt final à coller dans ChatGPT :"
+    ),
+    "Réponse avec contraintes": (
+        "Tu dois générer un prompt qui impose des contraintes de format, ton, ou longueur.\n"
+        "Réponds en français.\n"
+        "{category_instruction}\n"
+        "{style_instruction}\n"
+        "Contrainte exprimée : {user_input}\n\n"
+        "Écris le prompt final à coller dans ChatGPT :"
+    ),
+    "Créatif / roleplay": (
+        "Tu dois générer un prompt immersif ou créatif, avec un ton original ou un rôle imaginaire.\n"
+        "Réponds en français.\n"
+        "{category_instruction}\n"
+        "{style_instruction}\n"
+        "Idée exprimée : {user_input}\n\n"
+        "Écris le prompt final à coller dans ChatGPT :"
+    ),
+}
 
-def generate_prompt(category: str, style: str, user_input: str, max_new_tokens: int = 30000) -> str:
+def generate_prompt(category: str, style: str, pattern: str, user_input: str, max_new_tokens: int = 300) -> str:
     if client is None:
         return f"Erreur lors de l'initialisation du client HF : {_load_error}"
 
@@ -46,7 +78,8 @@ def generate_prompt(category: str, style: str, user_input: str, max_new_tokens: 
         "Très détaillé": "Le prompt doit inclure un rôle explicite, un objectif précis, un contexte et des contraintes.",
     }.get(style, "")
 
-    prompt = TEMPLATE.format(
+    template = PROMPT_TEMPLATES.get(pattern)
+    prompt = template.format(
         category_instruction=category_instruction,
         style_instruction=style_instruction,
         user_input=user_input,
@@ -60,12 +93,7 @@ def generate_prompt(category: str, style: str, user_input: str, max_new_tokens: 
             top_p=0.95,
             repetition_penalty=1.15,
         )
-        generated = result.strip()
-
-        # Post-traitement : isole uniquement le prompt généré
-        if "Prompt généré :" in generated:
-            generated = generated.split("Prompt généré :", 1)[-1].strip()
-        return generated
+        return result.strip()
     except Exception as exc:
         _logger.error("Erreur génération API Hugging Face : %s", exc)
         return f"Erreur lors de la génération : {exc}"
