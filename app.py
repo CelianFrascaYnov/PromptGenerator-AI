@@ -1,4 +1,5 @@
 import streamlit as st
+import random
 from generator import generate_prompt, load_error
 
 st.set_page_config(page_title="Prompt Generator", page_icon="🤖", layout="centered")
@@ -27,6 +28,21 @@ PROMPT_PATTERNS = {
     "Créatif / roleplay": "Formule un prompt immersif avec un ton ou une personnalité spécifique.",
 }
 
+PLACEHOLDER_EXAMPLES = [
+    "Je veux ouvrir un foodtruck à Paris",
+    "Je cherche une idée de vidéo TikTok virale pour une app mobile",
+    "Je veux une histoire de science-fiction dans un monde post-apocalyptique",
+    "J’ai besoin d’un script Python pour automatiser l’envoi de mails",
+    "Je veux une fiche de révision sur la mémoire à long terme",
+    "Génère une stratégie marketing pour une marque de vêtements éthiques",
+    "Crée un quiz de 10 questions sur les civilisations anciennes",
+    "Je veux un mini-jeu Flutter avec un bouton et un score",
+    "Crée une explication simple du théorème de Pythagore",
+    "Rédige une scène dramatique entre deux frères ennemis"
+]
+
+random_placeholder = random.choice(PLACEHOLDER_EXAMPLES)
+
 with st.sidebar:
     st.header("Paramètres du prompt")
     category = st.selectbox("📌 Type de prompt", list(PROMPT_CATEGORIES.keys()))
@@ -35,7 +51,7 @@ with st.sidebar:
     st.caption(PROMPT_PATTERNS[pattern])
 
 st.markdown("### Quel est votre besoin ?")
-user_input = st.text_area("", placeholder="Ex : Je veux ouvrir un foodtruck à Paris", height=150)
+user_input = st.text_area("", placeholder=random_placeholder, height=150)
 
 if st.button("✨ Générer le prompt"):
     if load_error is not None:
