@@ -1,31 +1,40 @@
 # Prompt Generator for ChatGPT
 
-Cette application Streamlit permet de générer automatiquement des prompts optimisés pour ChatGPT à partir d'un besoin exprimé par l'utilisateur.
+Cette application Streamlit permet de générer automatiquement des prompts optimisés pour ChatGPT à partir d'un besoin exprimé par l'utilisateur. Elle utilise le modèle **Mistral 7B Instruct v0.3** via l'API **Hugging Face Inference**.
 
-## Installation
+## 🧠 Fonctionnalités
 
-1. Clonez le dépôt puis installez les dépendances :
+- Choix du **type de prompt** (marketing, storytelling, code, étude)
+- Choix du **niveau de détail** et d’un **modèle de prompt engineering**
+- Historique des prompts générés
+- Blocage du bouton pendant la génération
+- Téléchargement du prompt généré
+
+## 🚀 Installation
+
+1. Clonez le dépôt et installez les dépendances :
 
 ```bash
 pip install -r requirements.txt
 ```
+2. Créez un fichier `.env` à la racine du projet et ajoutez votre clé API Hugging Face :
 
-Le téléchargement du modèle peut prendre quelques minutes lors du premier lancement.
-
-Par défaut, l'application utilise le modèle HuggingFace `gpt-neo-125M`. Les résultats peuvent rester succincts; n'hésitez pas à augmenter le nombre de tokens générés ou à tester avec un autre modèle si disponible.
-
-## Utilisation
-
-Exécutez l'application Streamlit :
-
-```bash
-python -m streamlit run app.py
+```
+HUGGINGFACE_API_KEY=your_api_key_here
 ```
 
-Une interface web s'ouvre dans votre navigateur. Sélectionnez le type de prompt, le niveau de détail souhaité et saisissez votre besoin. Cliquez sur **Générer le prompt** pour obtenir un texte prêt à être utilisé avec ChatGPT.
+## 🏃‍♂️ Lancer l'application
+```bash
+streamlit run app.py
+```
+l'interface sera accessible à l'adresse `http://localhost:8501`.
 
-## Dépendances
+## 🔗 Modèle utilisé
+Le modèle utilisé pour la génération de prompts est **Mistral 7B Instruct v0.3** disponible sur Hugging Face. lien: [Mistral 7B Instruct v0.3](https://huggingface.co/mistralai/Mistral-7B-Instruct-v0.3)
 
-- [Streamlit](https://streamlit.io/)
-- [Transformers](https://huggingface.co/transformers/)
-- [PyTorch](https://pytorch.org/)
+## 📦 Dépendances
+- `streamlit`
+- `transformers`
+- `torch`
+- `huggingface_hub`
+- `python-dotenv`
