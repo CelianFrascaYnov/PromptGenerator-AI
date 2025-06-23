@@ -38,3 +38,12 @@ Le modèle utilisé pour la génération de prompts est **Mistral 7B Instruct v0
 - `torch`
 - `huggingface_hub`
 - `python-dotenv`
+
+## 🎥 Vidéo de démonstration
+Voici une vidéo de démonstration de l'application :
+
+[![YouTube Video](https://img.youtube.com/vi/ERmzGlK7ze8/mqdefault.jpg)](https://youtu.be/ERmzGlK7ze8)
+
+## 👨‍💻Hébergement
+L'application est hébergée sur [Streamlit Cloud](https://share.streamlit.io/), ce qui permet de la déployer facilement et de la partager avec d'autres utilisateurs.
+Voici le lien vers l'application déployée : [Prompt Generator for ChatGPT](https://promptgenerator-ai-celian-frasca.streamlit.app/)
